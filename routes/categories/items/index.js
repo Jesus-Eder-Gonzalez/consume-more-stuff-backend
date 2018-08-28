@@ -5,7 +5,6 @@ const Category = require('../../../db/models/Category');
 router.get('/', (req, res) => {
   return Category.fetchAll({ withRelated: ['items'] })
     .then(response => {
-      console.log(response);
       res.json(response);
     })
     .catch(err => {
