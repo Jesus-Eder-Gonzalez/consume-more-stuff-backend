@@ -2,8 +2,8 @@
 
 const bookshelf = require('./bookshelf');
 
-class Condtion extends bookshelf.Model {
-  get TableName() {
+class Condition extends bookshelf.Model {
+  get tableName() {
     return 'conditions';
   }
 

@@ -3,7 +3,7 @@
 const bookshelf = require('./bookshelf');
 
 class Photo extends bookshelf.Model {
-  get TableName() {
+  get tableName() {
     return 'photos';
   }
 

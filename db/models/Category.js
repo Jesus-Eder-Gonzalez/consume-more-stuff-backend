@@ -2,8 +2,8 @@
 
 const bookshelf = require('./bookshelf');
 
-class Category extends bookshelf.Model() {
-  get TableName() {
+class Category extends bookshelf.Model {
+  get tableName() {
     return 'categories';
   }
 

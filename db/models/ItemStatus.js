@@ -3,7 +3,7 @@
 const bookshelf = require('./bookshelf');
 
 class ItemStatus extends bookshelf.Model {
-  get TableName() {
+  get tableName() {
     return 'item_statuses';
   }
 

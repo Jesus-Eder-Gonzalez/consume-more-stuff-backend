@@ -3,7 +3,7 @@
 const bookshelf = require('./bookshelf');
 
 class User extends bookshelf.Model {
-  get TableName() {
+  get tableName() {
     return 'users';
   }
 
