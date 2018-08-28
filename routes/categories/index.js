@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const Category = require('../../../db/models/Category');
+const Category = require('../../db/models/Category');
 
 router.get('/', (req, res) => {
-  return Category.fetchAll({ withRelated: ['items'] })
+  return Category.fetchAll()
     .then(response => {
       console.log(response);
       res.json(response);

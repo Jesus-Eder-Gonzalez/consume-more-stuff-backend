@@ -10,21 +10,21 @@ const routes = require('./routes');
 
 server.use(bodyparser.json());
 
-server.use(session({
-  store: new Redis(),
-  secret: 'fuzzy rabbits',
-  resav: false,
-  saveUninitialized: true
-}));
+// server.use(session({
+//   store: new Redis(),
+//   secret: 'fuzzy rabbits',
+//   resav: false,
+//   saveUninitialized: true
+// }));
 
-server.use(passport.initiatlize());
-server.use(passport.session());
+// server.use(passport.initiatlize());
+// server.use(passport.session());
 
-server.use('/api', routes);
+// server.use('/api', routes);
 
-server.get('*', (req, res) => {
-  res.send('catch all bad URLs');
-});
+// server.get('*', (req, res) => {
+//   res.send('catch all bad URLs');
+// });
 
 server.listen(PORT, () => {
   console.log(`Connected to port ${PORT}\n`);
