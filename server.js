@@ -4,6 +4,7 @@ const bodyparser = require('body-parser');
 const PORT = process.env.PORT || 8080;
 const server = express();
 
+server.use(bodyparser.json());
 
 server.get('/', (req, res) => {
   res.send('wiggity woo');
