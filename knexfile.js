@@ -1,15 +1,14 @@
 // Update with your config settings.
-
+require('dotenv').config();
 const path = require('path');
-
+console.log(process.env.DATABASE_NAME);
 module.exports = {
-
   development: {
     client: 'postgresql',
     connection: {
-      database: 'consume_more_stuff',
-      user:     'consume_more_stuff_user',
-      password: 'password'
+      database: process.env.DATABASE_NAME,
+      user: process.env.DATABASE_USER,
+      password: process.env.DATABASE_PASSWORD
     },
     pool: {
       min: 2,
@@ -30,7 +29,7 @@ module.exports = {
     client: 'postgresql',
     connection: {
       database: 'my_db',
-      user:     'username',
+      user: 'username',
       password: 'password'
     },
     pool: {
@@ -46,7 +45,7 @@ module.exports = {
     client: 'postgresql',
     connection: {
       database: 'my_db',
-      user:     'username',
+      user: 'username',
       password: 'password'
     },
     pool: {
@@ -57,5 +56,4 @@ module.exports = {
       tableName: 'knex_migrations'
     }
   }
-
 };
