@@ -12,7 +12,5 @@ router.use('/user', users);
 router.use('/items', items);
 router.use('/categories', categories)
 router.use('/categories/items', categoryWithItems);
-router.use('/user', users);
-router.use('/items', items);
 
 module.exports = router;

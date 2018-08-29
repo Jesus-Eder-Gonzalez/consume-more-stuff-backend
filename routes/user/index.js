@@ -4,7 +4,30 @@ const bcrypt = require('bcrypt');
 
 const saltRounds = 12;
 const User = require('../../db/models/User');
+const Item = require('../../db/models/Item');
 
+
+// ===== GET ALL OF USER'S ITEMS ===== //
+router.get('/items', (req, res) => {
+  let id = req.user.id;
+  return Item
+    .where({ created_by: id })
+    .fetchAll()
+    .then(userItems => {
+      res.json(userItems);
+    })
+    .catch(err => {
+      console.log(err);
+    });
+});
+
+// ===== GET/CREATE MESSAGE ===== //
+router.get('/messages/:itemId', (req, res) => {
+  console.log(req.params);
+  res.send('GET messages test');
+});
+
+// ===== CHANGE USER'S PASSWORD ===== //
 router.put('/', (req, res) => {
   let username = req.user.username;
   bcrypt.genSalt(saltRounds, (err, salt) => {
@@ -26,4 +49,4 @@ router.put('/', (req, res) => {
   })
 })
 
-module.exports = router;
+module.exports = router;  
