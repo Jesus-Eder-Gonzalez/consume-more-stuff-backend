@@ -14,12 +14,12 @@ router.get('/', (req, res) => {
 });
 
 router.get('/:id/items', (req, res) => {
-  const id = req.params.id
+  const category_id = req.params.id
   return Item
-    .query({ where: id })
+    .where({ category_id })
     .fetchAll()
     .then(result => {
-      console.log(result);
+      res.json(result);
     })
 })
 
