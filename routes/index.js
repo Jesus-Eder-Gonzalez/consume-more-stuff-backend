@@ -7,9 +7,11 @@ const auth = require('./user/auth');
 const users = require('./user/index')
 const items = require('./items')
 
-router.use('/categories/items/', categoryWithItems);
-router.use('/categories/', categories)
 router.use('/', auth);
+router.use('/user', users);
+router.use('/items', items);
+router.use('/categories', categories)
+router.use('/categories/items', categoryWithItems);
 router.use('/user', users);
 router.use('/items', items);
 

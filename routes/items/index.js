@@ -6,7 +6,6 @@ router.get('/', (req, res) => {
   return Item.query('orderBy', 'views')
     .fetchAll()
     .then(response => {
-      // console.log(response);
       res.json(response);
     })
     .catch(err => {
@@ -15,10 +14,11 @@ router.get('/', (req, res) => {
 });
 
 router.get('/:id', (req, res) => {
-  return new Item({ id: req.params.id })
-    .fetch()
+  const id = req.params.id
+  return Item
+    .where({ id })
+    .fetchAll()
     .then(response => {
-      console.log(response);
       res.json(response);
     })
     .catch(err => {
