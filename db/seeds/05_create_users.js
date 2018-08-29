@@ -8,37 +8,37 @@ exports.seed = function(knex, Promise) {
         {
           username: 'admin',
           email: 'admin@cm.s',
-          password: 'password',
+          password: '$2b$12$d5agevr/C6bDRew1KH.quO88FuRrZ4OkuIr0e8WOCAqnbImx3nw92',
           status_id: 1
         },
         {
           username: 'KL46',
           email: 'kylelewis@yahoo.com',
-          password: 'password',
+          password: '$2b$12$d5agevr/C6bDRew1KH.quO88FuRrZ4OkuIr0e8WOCAqnbImx3nw92',
           status_id: 2
         },
         {
           username: 'Jam',
           email: 'JayMay@gmail.com',
-          password: 'password',
+          password: '$2b$12$d5agevr/C6bDRew1KH.quO88FuRrZ4OkuIr0e8WOCAqnbImx3nw92',
           status_id: 2
         },
         {
           username: 'Finster',
           email: 'FinRight@gmail.com',
-          password: 'password',
+          password: '$2b$12$d5agevr/C6bDRew1KH.quO88FuRrZ4OkuIr0e8WOCAqnbImx3nw92',
           status_id: 2
         },
         {
           username: 'TheKing',
           email: 'JohnK@gmail.com',
-          password: 'password',
+          password: '$2b$12$d5agevr/C6bDRew1KH.quO88FuRrZ4OkuIr0e8WOCAqnbImx3nw92',
           status_id: 2
         },
         {
           username: 'LikeG6',
           email: 'JeffGuzman@gmail.com',
-          password: 'password',
+          password: '$2b$12$d5agevr/C6bDRew1KH.quO88FuRrZ4OkuIr0e8WOCAqnbImx3nw92',
           status_id: 2
         }
       ]);
