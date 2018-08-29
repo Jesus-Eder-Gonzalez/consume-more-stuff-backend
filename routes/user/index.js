@@ -4,6 +4,20 @@ const bcrypt = require('bcrypt');
 
 const saltRounds = 12;
 const User = require('../../db/models/User');
+const Item = require('../../db/models/Item');
+
+router.get('/items', (req, res) => {
+  let id = req.user.id;
+  return Item
+    .where({ created_by: id })
+    .fetchAll()
+    .then(userItems => {
+      res.json(userItems);
+    })
+    .catch(err => {
+      console.log(err);
+    });
+});
 
 router.put('/', (req, res) => {
   let username = req.user.username;
@@ -26,4 +40,4 @@ router.put('/', (req, res) => {
   })
 })
 
-module.exports = router;
+module.exports = router;  

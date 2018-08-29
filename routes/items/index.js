@@ -5,8 +5,8 @@ const Item = require('../../db/models/Item');
 router.get('/', (req, res) => {
   return Item.query('orderBy', 'views')
     .fetchAll()
-    .then(response => {
-      res.json(response);
+    .then(allItems => {
+      res.json(allItems);
     })
     .catch(err => {
       console.log(err);
@@ -18,8 +18,8 @@ router.get('/:id', (req, res) => {
   return Item
     .where({ id })
     .fetchAll()
-    .then(response => {
-      res.json(response);
+    .then(item => {
+      res.json(item);
     })
     .catch(err => {
       console.log(err);
@@ -38,6 +38,7 @@ router.put('/:id', (req, res) => {
     status_id,
     photo_id,
   } = req.body;
+  console.log(req.user)
   const id = req.params.id;
   return Item
     .where({ id })
