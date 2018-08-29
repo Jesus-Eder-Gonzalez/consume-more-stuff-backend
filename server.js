@@ -13,7 +13,7 @@ server.use(bodyparser.json());
 server.use(session({
   store: new Redis(),
   secret: 'fuzzy rabbits',
-  resav: false,
+  resave: false,
   saveUninitialized: true
 }));
 

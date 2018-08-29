@@ -64,7 +64,6 @@ router.post('/register', (req, res) => {
     email
   } = req.body;
   bcrypt.genSalt(saltRounds, (err, salt) => {
-    console.log('TEST TEST TEST TEST')
     if (err) { return res.status(500); }
     bcrypt.hash(req.body.password, salt, (err, hashedPassword) => {
       if (err) { return res.status(500); }
@@ -89,9 +88,7 @@ router.post('/register', (req, res) => {
 // ===== LOG IN / LOG OUT ===== //
 
 router.post('/login', (req, res, next) => {
-  console.log('req.body', req.body)
   passport.authenticate('local', (err, user, info) => {
-    console.log('user', user)
     if (err) { return next(err); }
     if (!user) { return res.redirect('/login'); }
     req.login(user, err => {

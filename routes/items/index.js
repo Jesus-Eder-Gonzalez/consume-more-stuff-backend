@@ -26,4 +26,43 @@ router.get('/:id', (req, res) => {
     });
 });
 
+router.put('/:id', (req, res) => {
+  let {
+    description,
+    manufacturer_make,
+    model_name_number,
+    dimensions,
+    notes_details,
+    condition_id,
+    category_id,
+    status_id,
+    photo_id,
+  } = req.body;
+  const id = req.params.id;
+  return Item
+    .where({ id })
+    .save(
+      {
+        description,
+        manufacturer_make,
+        model_name_number,
+        dimensions,
+        notes_details,
+        condition_id,
+        category_id,
+        status_id,
+        photo_id,
+      },
+      {
+        patch: true
+      }
+    )
+    .then(item => {
+      return res.json(item.attributes);
+    })
+    .catch(err => {
+      console.log('err: ', err)
+    })
+})
+
 module.exports = router;
