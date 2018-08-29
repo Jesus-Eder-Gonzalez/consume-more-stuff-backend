@@ -1,6 +1,7 @@
+require('dotenv').config();
 const express = require('express');
 const bodyparser = require('body-parser');
-const session = require ('express-session');
+const session = require('express-session');
 const Redis = require('connect-redis')(session);
 const passport = require('passport');
 
@@ -10,12 +11,14 @@ const routes = require('./routes');
 
 server.use(bodyparser.json());
 
-server.use(session({
-  store: new Redis(),
-  secret: 'fuzzy rabbits',
-  resave: false,
-  saveUninitialized: true
-}));
+server.use(
+  session({
+    store: new Redis(),
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true
+  })
+);
 
 server.use(passport.initialize());
 server.use(passport.session());
