@@ -6,11 +6,7 @@ const saltRounds = 12;
 const User = require('../../db/models/User');
 
 router.put('/', (req, res) => {
-  console.log(req.user)
   let username = req.user.username;
-  let { password } = req.body;
-  console.log(password)
-
   bcrypt.genSalt(saltRounds, (err, salt) => {
     if (err) { return res.status(500); }
     bcrypt.hash(req.body.password, salt, (err, hashedPassword) => {
