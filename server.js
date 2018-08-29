@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyparser = require('body-parser');
 const session = require ('express-session');
-const Redis = require('connect-redis');
+const Redis = require('connect-redis')(session);
 const passport = require('passport');
 
 const PORT = process.env.PORT || 8080;
@@ -10,15 +10,15 @@ const routes = require('./routes');
 
 server.use(bodyparser.json());
 
-// server.use(session({
-//   store: new Redis(),
-//   secret: 'fuzzy rabbits',
-//   resav: false,
-//   saveUninitialized: true
-// }));
+server.use(session({
+  store: new Redis(),
+  secret: 'fuzzy rabbits',
+  resav: false,
+  saveUninitialized: true
+}));
 
-// server.use(passport.initiatlize());
-// server.use(passport.session());
+server.use(passport.initialize());
+server.use(passport.session());
 
 server.use('/api', routes);
 
