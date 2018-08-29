@@ -13,4 +13,14 @@ router.get('/', (req, res) => {
     });
 });
 
+router.get('/:id/items', (req, res) => {
+  const category_id = req.params.id
+  return Item
+    .where({ category_id })
+    .fetchAll()
+    .then(result => {
+      res.json(result);
+    })
+})
+
 module.exports = router;
