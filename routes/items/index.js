@@ -26,6 +26,42 @@ router.get('/:id', (req, res) => {
     });
 });
 
+router.post('/', (req, res) => {
+  let created_by = req.user.id;
+  let {
+    description,
+    manufacturer_make,
+    model_name_number,
+    dimensions,
+    notes_details,
+    condition_id,
+    category_id,
+    status_id,
+    photo_id,
+  } = req.body;
+  // console.log('user id', created_by)
+  return new Item({
+    created_by: created_by,
+    views: 0,
+    description,
+    manufacturer_make,
+    model_name_number,
+    dimensions,
+    notes_details,
+    condition_id,
+    category_id,
+    status_id,
+    photo_id
+  })
+    .save()
+    .then(newItem => {
+      res.json(newItem)
+    })
+    .catch(err => {
+      console.log('error : ', err);
+    });
+});
+
 router.put('/:id', (req, res) => {
   let {
     description,
