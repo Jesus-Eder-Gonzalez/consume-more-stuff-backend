@@ -9,7 +9,7 @@ router.get('/', (req, res) => {
       res.json(allItems);
     })
     .catch(err => {
-      console.log(err);
+      console.log('error : ', err)
     });
 });
 
@@ -22,7 +22,7 @@ router.get('/:id', (req, res) => {
       res.json(item);
     })
     .catch(err => {
-      console.log(err);
+      console.log('error : ', err)
     });
 });
 
@@ -39,7 +39,6 @@ router.post('/', (req, res) => {
     status_id,
     photo_id,
   } = req.body;
-  // console.log('user id', created_by)
   return new Item({
     created_by: created_by,
     views: 0,
@@ -55,10 +54,10 @@ router.post('/', (req, res) => {
   })
     .save()
     .then(newItem => {
-      res.json(newItem)
+      res.json(newItem);
     })
     .catch(err => {
-      console.log('error : ', err);
+      console.log('error : ', err)
     });
 });
 
@@ -74,7 +73,6 @@ router.put('/:id', (req, res) => {
     status_id,
     photo_id,
   } = req.body;
-  console.log(req.user)
   const id = req.params.id;
   return Item
     .where({ id })
@@ -98,7 +96,7 @@ router.put('/:id', (req, res) => {
       return res.json(item.attributes);
     })
     .catch(err => {
-      console.log('err: ', err)
+      console.log('error : ', err)
     })
 })
 

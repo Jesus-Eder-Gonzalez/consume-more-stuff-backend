@@ -3,6 +3,7 @@ exports.up = function(knex, Promise) {
   return knex.schema.createTable('items', table => {
     table.increments();
     table.string('description').notNullable();
+    table.string('price');
     table.string('manufacturer_make');
     table.string('model_name_number');
     table.string('dimensions');

@@ -1,7 +1,6 @@
 // Update with your config settings.
 require('dotenv').config();
 const path = require('path');
-console.log(process.env.DATABASE_NAME);
 module.exports = {
   development: {
     client: 'postgresql',
