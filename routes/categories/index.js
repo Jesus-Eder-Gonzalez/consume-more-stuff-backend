@@ -9,7 +9,7 @@ router.get('/', (req, res) => {
       res.json(response);
     })
     .catch(err => {
-      console.log(err);
+      console.log('error : ', err)
     });
 });
 
@@ -20,6 +20,9 @@ router.get('/:id/items', (req, res) => {
     .fetchAll()
     .then(result => {
       res.json(result);
+    })
+    .catch(err => {
+      console.log('error : ', err)
     })
 })
 
