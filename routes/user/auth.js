@@ -27,7 +27,7 @@ passport.deserializeUser((user, done) => {
       });
     })
     .catch(err => {
-      console.log('error: ', err);
+      console.log('error : ', err)
       return done(err);
     });
 });
@@ -78,7 +78,7 @@ router.post('/register', (req, res) => {
           res.redirect('/');
         })
         .catch(err => {
-          console.log('err: ', err);
+          console.log('error : ', err)
           return res.send('Unable to register with that username');
         });
     });
