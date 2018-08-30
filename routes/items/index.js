@@ -17,7 +17,7 @@ router.get('/:id', (req, res) => {
   const id = req.params.id
   return Item
     .where({ id })
-    .fetchAll()
+    .fetchAll({ withRelated: ['condition', 'category', 'itemStatus'] })
     .then(item => {
       res.json(item);
     })
@@ -70,11 +70,9 @@ router.put('/:id', (req, res) => {
     dimensions,
     notes_details,
     condition_id,
-    category_id,
     status_id,
     photo_id,
   } = req.body;
-  console.log(req.user)
   const id = req.params.id;
   return Item
     .where({ id })
@@ -86,7 +84,6 @@ router.put('/:id', (req, res) => {
         dimensions,
         notes_details,
         condition_id,
-        category_id,
         status_id,
         photo_id,
       },
@@ -94,8 +91,14 @@ router.put('/:id', (req, res) => {
         patch: true
       }
     )
-    .then(item => {
-      return res.json(item.attributes);
+    .then(() => {
+      return Item
+        .where({ id })
+        .fetchAll({ withRelated: ['condition', 'category', 'itemStatus'] })
+        .then(item => {
+          console.log('item', item);
+          return res.json(item);
+        })
     })
     .catch(err => {
       console.log('err: ', err)

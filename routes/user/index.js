@@ -12,7 +12,7 @@ router.get('/items', (req, res) => {
   let id = req.user.id;
   return Item
     .where({ created_by: id })
-    .fetchAll()
+    .fetchAll({ withRelated: ['itemStatus']})
     .then(userItems => {
       res.json(userItems);
     })
