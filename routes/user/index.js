@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const saltRounds = 12;
 const User = require('../../db/models/User');
 const Item = require('../../db/models/Item');
+const Message = require('../../db/models/Message');
 
 
 // ===== GET ALL OF USER'S ITEMS ===== //
@@ -21,11 +22,31 @@ router.get('/items', (req, res) => {
     });
 });
 
-// ===== GET/CREATE MESSAGE ===== //
+// ===== MESSAGES ===== //
 router.get('/messages/:itemId', (req, res) => {
-  console.log(req.params);
-  res.send('GET messages test');
+  let itemId = req.params.itemId;
+  let userId = req.user.id;
+  return Message
+    .where({
+      seller_id: userId,
+      item_id: itemId
+    })
+    .fetchAll()
+    .then(itemMessages => {
+      if (itemMessages.length < 1) {
+        res.json({message: 'You do not have permission to view this message.'})
+      }
+      else {res.json(itemMessages)}
+    })
+    .catch(err => {
+      console.log('error :', err)
+    })
 });
+
+router.post('/:buyerID/messages/:itemId', (req, res) => {
+  console.log('params ', req.params)
+  res.send('test');
+})
 
 // ===== CHANGE USER'S PASSWORD ===== //
 router.put('/', (req, res) => {
@@ -38,8 +59,7 @@ router.put('/', (req, res) => {
         .where({ username })
         .save({ password: hashedPassword }, { patch: true })
         .then(user => {
-          console.log('username', username)
-          return res.json(user.attributes)
+          return res.json(user.attributes);
         })
         .catch(err => {
           console.log('err: ', err);
