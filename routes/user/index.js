@@ -18,12 +18,14 @@ router.get('/items', (req, res) => {
       res.json(userItems);
     })
     .catch(err => {
-      console.log(err);
+      console.log('error : ', err)
     });
 });
 
 // ===== MESSAGES ===== //
 router.get('/messages/:itemId', (req, res) => {
+  console.log(req.params)
+  console.log(req.user)
   let itemId = req.params.itemId;
   let userId = req.user.id;
   return Message
@@ -34,19 +36,40 @@ router.get('/messages/:itemId', (req, res) => {
     .fetchAll()
     .then(itemMessages => {
       if (itemMessages.length < 1) {
-        res.json({message: 'You do not have permission to view this message.'})
+        res.json({ message: 'You do not have permission to view this message.' })
       }
-      else {res.json(itemMessages)}
+      else { res.json(itemMessages) }
     })
     .catch(err => {
-      console.log('error :', err)
+      console.log('error : ', err)
     })
 });
 
-router.post('/:buyerID/messages/:itemId', (req, res) => {
-  console.log('params ', req.params)
-  res.send('test');
-})
+// router.post('/:buyerId/messages/:itemId', (req, res) => {
+//   console.log('params ', req.params)
+//   console.log('user ', req.user)
+//   console.log('req.body', req.body)
+//   let buyerId = req.params.buyerId;
+//   let itemId = req.params.itemId;
+//   let sellerId = req.user.id
+//   let { message } = req.body
+//   // res.send('test')
+//   return Message
+//     .where({
+//       seller_id: sellerId,
+//       buyer_id: buyerId,
+//       itemId: itemId
+//     })
+//     .fetch()
+//     .then(message => {
+//       return new Message({
+//         message:
+//       })
+//     })
+//     .catch(err => {
+//       console.log('error : ', err)
+//     });
+// })
 
 // ===== CHANGE USER'S PASSWORD ===== //
 router.put('/', (req, res) => {
@@ -62,7 +85,7 @@ router.put('/', (req, res) => {
           return res.json(user.attributes);
         })
         .catch(err => {
-          console.log('err: ', err);
+          console.log('error : ', err)
           return res.send('Unable to change password. Please try again later.')
         })
     })
