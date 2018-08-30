@@ -12,4 +12,4 @@ class Condition extends bookshelf.Model {
   }
 }
 
-module.exports = bookshelf.models('Condition', Condition);
+module.exports = bookshelf.model('Condition', Condition);
