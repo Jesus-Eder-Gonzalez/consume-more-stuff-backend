@@ -9,7 +9,7 @@ exports.seed = function(knex, Promise) {
           item_id: 1,
           seller_id: 1,
           buyer_id: 2,
-          message: 'This is first message'  
+          message: 'This is the first message'  
         },
         {
           item_id: 2,
@@ -28,6 +28,12 @@ exports.seed = function(knex, Promise) {
           seller_id: 4,
           buyer_id: 1,
           message: 'This is the fourth message'  
+        },
+        {
+          item_id: 1,
+          seller_id: 1,
+          buyer_id: 3,
+          message: 'This is the fifth message'  
         }
       ]);
     });

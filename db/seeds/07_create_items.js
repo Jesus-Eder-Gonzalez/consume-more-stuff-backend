@@ -7,6 +7,7 @@ exports.seed = function(knex, Promise) {
       return knex('items').insert([
         {
           description: '2017 jeep renegade',
+          price: 'honda crv',
           manufacturer_make: 'jeep',
           model_name_number: 'renegade',
           dimensions: 'dimensions filler',
@@ -20,10 +21,11 @@ exports.seed = function(knex, Promise) {
         },
         {
           description: 'oven',
+          price: 'ten chickens',
           manufacturer_make: 'manufacturer_make filler',
           model_name_number: 'model_name_number filler',
           dimensions: 'dimensions filler',
-          notes_details: 'if i set it to 2000 degrees it should be done in two minutes',
+          notes_details: 'if i set it to 2000 degrees it\'ll be done in 30 seconds ',
           views: 0,
           created_by: 2,
           condition_id: 2,
@@ -33,6 +35,7 @@ exports.seed = function(knex, Promise) {
         },
         {
           description: 'windows 10 notebook',
+          price: '10',
           manufacturer_make: 'manufacturer_make filler',
           model_name_number: 'model_name_number filler',
           dimensions: 'dimensions filler',
@@ -46,6 +49,7 @@ exports.seed = function(knex, Promise) {
         },
         {
           description: 'couch',
+          price: 'chicken tendies',
           manufacturer_make: 'manufacturer_make filler',
           model_name_number: 'model_name_number filler',
           dimensions: 'dimensions filler',
@@ -59,6 +63,7 @@ exports.seed = function(knex, Promise) {
         },
         {
           description: 'honda crv',
+          price: '$99999999',
           manufacturer_make: 'manufacturer_make filler',
           model_name_number: 'model_name_number filler',
           dimensions: 'dimensions filler',
