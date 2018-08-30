@@ -39,7 +39,6 @@ router.post('/', (req, res) => {
     status_id,
     photo_id,
   } = req.body;
-  // console.log('user id', created_by)
   return new Item({
     created_by: created_by,
     views: 0,
