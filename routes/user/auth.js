@@ -92,15 +92,23 @@ router.post('/login', (req, res, next) => {
     if (err) { return next(err); }
     if (!user) { return res.redirect('/login'); }
     req.login(user, err => {
-      if (err) { return next(err); }
-      return res.json({ success: true })
+      if (err) {
+        return next(err);
+      } else {
+        let userProfile = {
+          id: user.id,
+          username: user.username,
+          email: user.email
+        }
+        return res.json(userProfile);
+      }
     })
   })(req, res, next)
 });
 
 router.get('/logout', (req, res) => {
   req.logout();
-  res.json({ success: true})
+  res.json({ success: true })
 });
 
 module.exports = router;
