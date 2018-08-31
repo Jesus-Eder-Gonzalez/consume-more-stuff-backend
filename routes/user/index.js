@@ -45,31 +45,51 @@ router.get('/messages/:itemId', (req, res) => {
     })
 });
 
-// router.post('/:buyerId/messages/:itemId', (req, res) => {
-//   console.log('params ', req.params)
-//   console.log('user ', req.user)
-//   console.log('req.body', req.body)
-//   let buyerId = req.params.buyerId;
-//   let itemId = req.params.itemId;
-//   let sellerId = req.user.id
-//   let { message } = req.body
-//   // res.send('test')
-//   return Message
-//     .where({
-//       seller_id: sellerId,
-//       buyer_id: buyerId,
-//       itemId: itemId
-//     })
-//     .fetch()
-//     .then(message => {
-//       return new Message({
-//         message:
-//       })
-//     })
-//     .catch(err => {
-//       console.log('error : ', err)
-//     });
-// })
+router.post('/:buyerId/messages/:itemId', (req, res) => {
+  let buyerId = req.params.buyerId;
+  let itemId = req.params.itemId;
+  let sellerId = req.user.id;
+  let { message } = req.body;
+
+  return Item // Checks if item belongs to seller
+    .where({
+      id: itemId,
+      created_by: sellerId
+    })
+    .fetch()
+    .then(item => {
+      if (!item) {
+        res.json({ message: 'The item does not exist, or is not listed as yours.' });
+      } else {
+        return Message // Checks if messages exist between buyer and seller on a given item
+          .where({
+            seller_id: sellerId,
+            buyer_id: buyerId,
+            item_id: itemId
+          })
+          .fetch()
+          .then(oldMessage => {
+            if (!oldMessage) {
+              res.json({ message: 'The seller is not able to initiate conversation!' });
+            } else {
+              return new Message({ // Creates new message, sent by seller to buyer
+                buyer_id: buyerId,
+                seller_id: sellerId,
+                message,
+                item_id: itemId
+              })
+                .save()
+                .then(newMessage => {
+                  res.json(newMessage);
+                });
+            };
+          });
+      };
+    })
+    .catch(err => {
+      console.log('error : ', err);
+    });
+})
 
 // ===== CHANGE USER'S PASSWORD ===== //
 router.put('/settings', (req, res) => {
