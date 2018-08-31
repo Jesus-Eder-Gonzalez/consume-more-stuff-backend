@@ -16,8 +16,7 @@ exports.seed = function(knex, Promise) {
           created_by: 1,
           condition_id: 1,
           category_id: 1,
-          status_id: 1,
-          photo_id: 1,
+          status_id: 1
         },
         {
           description: 'oven',
@@ -30,8 +29,7 @@ exports.seed = function(knex, Promise) {
           created_by: 2,
           condition_id: 2,
           category_id: 2,
-          status_id: 2,
-          photo_id: 2,
+          status_id: 2
         },
         {
           description: 'windows 10 notebook',
@@ -44,8 +42,7 @@ exports.seed = function(knex, Promise) {
           created_by: 3,
           condition_id: 3,
           category_id: 3,
-          status_id: 3,
-          photo_id: 3,
+          status_id: 3
         },
         {
           description: 'couch',
@@ -58,8 +55,7 @@ exports.seed = function(knex, Promise) {
           created_by: 4,
           condition_id: 4,
           category_id: 4,
-          status_id: 4,
-          photo_id: 4,
+          status_id: 4
         },
         {
           description: 'honda crv',
@@ -72,8 +68,7 @@ exports.seed = function(knex, Promise) {
           created_by: 1,
           condition_id: 2,
           category_id: 1,
-          status_id: 2,
-          photo_id: 5,
+          status_id: 2
         },
       ]);
     });
