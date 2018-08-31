@@ -72,7 +72,7 @@ router.get('/messages/:itemId', (req, res) => {
 // })
 
 // ===== CHANGE USER'S PASSWORD ===== //
-router.put('/', (req, res) => {
+router.put('/settings', (req, res) => {
   let username = req.user.username;
   bcrypt.genSalt(saltRounds, (err, salt) => {
     if (err) { return res.status(500); }

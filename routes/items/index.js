@@ -27,7 +27,6 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-  let created_by = req.user.id;
   let {
     description,
     manufacturer_make,
@@ -38,9 +37,10 @@ router.post('/', (req, res) => {
     category_id,
     status_id,
     photo_id,
+    created_by
   } = req.body;
   return new Item({
-    created_by: created_by,
+    created_by,
     views: 0,
     description,
     manufacturer_make,
