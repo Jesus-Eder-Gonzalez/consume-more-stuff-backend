@@ -5,11 +5,11 @@ exports.seed = function(knex, Promise) {
     .then(function() {
       // Inserts seed entries
       return knex('conditions').insert([
-        { name: 'new', rank: 1 },
-        { name: 'good', rank: 2 },
-        { name: 'fair', rank: 3 },
-        { name: 'worn', rank: 4 },
-        { name: 'used', rank: 5 }
+        { name: 'New', rank: 1 },
+        { name: 'Good', rank: 2 },
+        { name: 'Fair', rank: 3 },
+        { name: 'Worn', rank: 4 },
+        { name: 'Used', rank: 5 }
       ]);
     });
 };

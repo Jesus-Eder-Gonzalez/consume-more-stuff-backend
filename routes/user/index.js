@@ -13,7 +13,7 @@ router.get('/items', (req, res) => {
   let id = req.user.id;
   return Item
     .where({ created_by: id })
-    .fetchAll()
+    .fetchAll({ withRelated: ['itemStatus']})
     .then(userItems => {
       res.json(userItems);
     })
@@ -92,7 +92,7 @@ router.post('/:buyerId/messages/:itemId', (req, res) => {
 })
 
 // ===== CHANGE USER'S PASSWORD ===== //
-router.put('/', (req, res) => {
+router.put('/settings', (req, res) => {
   let username = req.user.username;
   bcrypt.genSalt(saltRounds, (err, salt) => {
     if (err) { return res.status(500); }

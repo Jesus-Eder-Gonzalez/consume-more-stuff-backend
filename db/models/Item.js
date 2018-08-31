@@ -1,6 +1,9 @@
 'use strict';
 
 const bookshelf = require('./bookshelf');
+require('./ItemStatus');
+require('./Condition');
+require('./Category');
 
 class Item extends bookshelf.Model {
   get tableName() {

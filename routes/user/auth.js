@@ -58,7 +58,6 @@ passport.use(new LocalStrategy((username, password, done) => {
 
 // ===== REGISTRATION ===== //
 router.post('/register', (req, res) => {
-  console.log('req.body', req.body)
   let {
     username,
     email
@@ -75,7 +74,7 @@ router.post('/register', (req, res) => {
       })
         .save()
         .then(result => {
-          res.redirect('/');
+          res.json({ success: true })
         })
         .catch(err => {
           console.log('error : ', err)
