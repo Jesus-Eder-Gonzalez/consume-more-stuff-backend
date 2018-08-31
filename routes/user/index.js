@@ -13,7 +13,7 @@ router.get('/items', (req, res) => {
   let id = req.user.id;
   return Item
     .where({ created_by: id })
-    .fetchAll({ withRelated: ['itemStatus']})
+    .fetchAll({ withRelated: ['itemStatus'] })
     .then(userItems => {
       res.json(userItems);
     })
@@ -94,22 +94,33 @@ router.post('/:buyerId/messages/:itemId', (req, res) => {
 // ===== CHANGE USER'S PASSWORD ===== //
 router.put('/settings', (req, res) => {
   let username = req.user.username;
-  bcrypt.genSalt(saltRounds, (err, salt) => {
-    if (err) { return res.status(500); }
-    bcrypt.hash(req.body.password, salt, (err, hashedPassword) => {
-      if (err) { return res.status(500); }
-      return User
-        .where({ username })
-        .save({ password: hashedPassword }, { patch: true })
-        .then(user => {
-          return res.json(user.attributes);
-        })
-        .catch(err => {
-          console.log('error : ', err)
-          return res.send('Unable to change password. Please try again later.')
+  let {
+    oldPass,
+    newPass,
+  } = req.body;
+  return User
+    .where({ username })
+    .fetchAll()
+    .then(user => {
+      bcrypt.compare(oldPass, user.models[0].attributes.password)
+        .then(result => {
+          if (result) {
+            bcrypt.genSalt(saltRounds, (err, salt) => {
+              bcrypt.hash(newPass, salt, (err, hashedPassword) => {
+                if (err) { return res.status(500); }
+                return User
+                  .where({ username })
+                  .save({ password: hashedPassword }, { patch: true })
+                  .then(user => {
+                    res.json({ message: 'success' })
+                  })
+              })
+            })
+          } else {
+            res.json({ message: `Wrong existing password` })
+          }
         })
     })
-  })
 })
 
 module.exports = router;  
