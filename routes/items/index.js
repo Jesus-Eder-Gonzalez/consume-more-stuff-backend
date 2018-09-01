@@ -28,6 +28,7 @@ router.get('/:id', (req, res) => {
 
 router.post('/', (req, res) => {
   let {
+    created_by,
     description,
     manufacturer_make,
     model_name_number,
@@ -35,13 +36,10 @@ router.post('/', (req, res) => {
     notes_details,
     condition_id,
     category_id,
-    status_id,
-    photo_id,
-    created_by
+    status_id
   } = req.body;
   return new Item({
     created_by,
-    views: 0,
     description,
     manufacturer_make,
     model_name_number,
@@ -50,7 +48,7 @@ router.post('/', (req, res) => {
     condition_id,
     category_id,
     status_id,
-    photo_id
+    views: 0
   })
     .save()
     .then(newItem => {
