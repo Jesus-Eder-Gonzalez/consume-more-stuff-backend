@@ -1,9 +1,9 @@
 # consume-more-stuff-backend
 
-> This is the backend for consume-more-stuff.
+This is the backend for consume-more-stuff.
 
 ## Installation
-> using npm, install the following
+using npm, install the following
   - bcrypt
   - body-parser
   - bookshelf
@@ -14,6 +14,8 @@
   - passport
   - passport-local
   - pg
+
+You will also need to install aws-sdk and wire it up yourself.
 
 ## Database
 
