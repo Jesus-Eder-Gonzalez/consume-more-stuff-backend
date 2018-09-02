@@ -24,54 +24,55 @@ router.get('/:id', (req, res) => {
     })
 });
 
-// ===== POST NEW IMAGE ===== //
-// Gets Item ID, attaches as item_id to Photo during POST
-router.post('/', (req, res) => {
-  const busboy = new Busboy({ headers: req.headers})
-  const file = req.files.upload;
-  const userId = req.user.id;
-  const photoUrl = `https://${BUCKET_NAME}.s3.amazonaws.com/${userId}/${file.name}`;
+// // ===== POST NEW IMAGE ===== //
+// // Gets Item ID, attaches as item_id to Photo during POST
+// router.post('/', (req, res) => {
+//   const busboy = new Busboy({ headers: req.headers})
+//   const file = req.files.fileUpload;
+//   const userId = req.user.id;
+//   // Hard code, find out how to pluck data.location
+//   const photoUrl = `https://${BUCKET_NAME}.s3.amazonaws.com/${userId}/${file.name}`;
 
-  busboy.on('finish', () => {
-    uploadToS3(userId, file)
-  });
+//   busboy.on('finish', () => {
+//     uploadToS3(userId, file)
+//   });
 
-  return Item
-    .where({})
+//   return Item
+//     .where({})
 
-    .then(item => {
-      if (item) {
-        return new Photo({
-          item_id: item.id,
-          link: photoUrl
-        })
-      }
-    })
+//     .then(item => {
+//       if (item) {
+//         return new Photo({
+//           item_id: item.id,
+//           link: photoUrl
+//         })
+//       }
+//     })
 
-  res.send({ success: 'Uploaded' })
-  req.pipe(busboy);
-});
+//   res.send({ success: 'Uploaded' })
+//   req.pipe(busboy);
+// });
 
 // ===== HELPER ===== //
-function uploadToS3(userId, file) {
-  const s3bucket = new AWS.S3({ 
-    Bucket: BUCKET_NAME,
-    accessKeyId: IAM_USER_KEY,
-    secretAccessKey: IAM_USER_SECRET
-  });
-  s3bucket.createBucket(() => {
-    const params = {
-      Bucket: BUCKET_NAME,
-      Key: `${userId}/${file.name}`,
-      Body: file.data
-    };
-    s3bucket.upload(params, (err, data) => {
-
-      if (err) {
-        console.log(err);
-      };
-    });
-  });
-};
+// function uploadToS3(userId, file) {
+//   const s3bucket = new AWS.S3({ 
+//     Bucket: BUCKET_NAME,
+//     accessKeyId: IAM_USER_KEY,
+//     secretAccessKey: IAM_USER_SECRET
+//   });
+//   s3bucket.createBucket(() => {
+//     const params = {
+//       Bucket: BUCKET_NAME,
+//       Key: `${userId}/${file.name}`,
+//       Body: file.data
+//     };
+//     s3bucket.upload(params, (err, data) => {
+//       if (err) {
+//         console.log(err);
+//       };
+//       return data.Location
+//     });
+//   });
+// };
 
 module.exports = router;

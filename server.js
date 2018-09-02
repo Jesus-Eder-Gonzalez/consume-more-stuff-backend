@@ -11,10 +11,10 @@ const PORT = process.env.PORT || 8080;
 const server = express();
 const routes = require('./routes');
 
-server.use(bodyparser.urlencoded({ extended: true }));
+server.use(bodyparser.urlencoded({ limit: '10mb', extended: true }));
 server.use(bodyparser.json());
 server.use(busboy());
-server.use(busboyBodyparser());
+server.use(busboyBodyparser({ limit: '10mb'}));
 
 server.use(
   session({
