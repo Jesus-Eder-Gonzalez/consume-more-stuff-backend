@@ -32,26 +32,44 @@ const upload = multer({
 })
 
 router.get('/', (req, res) => {
-  return Item.query('orderBy', 'views')
+  return Item.query(qb => {
+    qb.orderBy('views', 'DESC');
+  })
     .fetchAll()
     .then(allItems => {
       res.json(allItems);
     })
     .catch(err => {
-      console.log('error : ', err)
+      console.log('error : ', err);
+    });
+});
+
+router.put('/:id/views', (req, res) => {
+  const id = req.params.id;
+  return Item.query()
+    .where({ id })
+
+    .increment('views', 1)
+    .then(response => {
+      res.json(response);
+    })
+    .catch(err => {
+      console.log('error : ', err);
     });
 });
 
 router.get('/:id', (req, res) => {
-  const id = req.params.id
-  return Item
-    .where({ id })
-    .fetchAll({ withRelated: ['condition', 'category', 'itemStatus', 'photos'] })
+  const id = req.params.id;
+  return Item.where({ id })
+    .query(qb => {
+      qb.orderBy('views', 'DESC');
+    })
+    .fetchAll({ withRelated: ['condition', 'category', 'itemStatus'] })
     .then(item => {
       res.json(item);
     })
     .catch(err => {
-      console.log('error : ', err)
+      console.log('error : ', err);
     });
 });
 
@@ -111,11 +129,10 @@ router.put('/:id', (req, res) => {
     notes_details,
     condition_id,
     status_id,
-    photo_id,
+    photo_id
   } = req.body;
   const id = req.params.id;
-  return Item
-    .where({ id })
+  return Item.where({ id })
     .save(
       {
         description,
@@ -125,23 +142,22 @@ router.put('/:id', (req, res) => {
         notes_details,
         condition_id,
         status_id,
-        photo_id,
+        photo_id
       },
       {
         patch: true
       }
     )
     .then(() => {
-      return Item
-        .where({ id })
+      return Item.where({ id })
         .fetchAll({ withRelated: ['condition', 'category', 'itemStatus'] })
         .then(item => {
           return res.json(item);
-        })
+        });
     })
     .catch(err => {
-      console.log('error : ', err)
-    })
-})
+      console.log('error : ', err);
+    });
+});
 
 module.exports = router;
