@@ -4,17 +4,13 @@ const bodyparser = require('body-parser');
 const session = require('express-session');
 const Redis = require('connect-redis')(session);
 const passport = require('passport');
-const busboy = require('connect-busboy');
-const busboyBodyparser = require('busboy-body-parser');
 
 const PORT = process.env.PORT || 8080;
 const server = express();
 const routes = require('./routes');
 
-server.use(bodyparser.urlencoded({ limit: '10mb', extended: true }));
 server.use(bodyparser.json());
-server.use(busboy());
-server.use(busboyBodyparser({ limit: '10mb'}));
+server.use(bodyparser.urlencoded({ extended: true }));
 
 server.use(
   session({

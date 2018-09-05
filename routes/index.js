@@ -4,11 +4,12 @@ const router = express.Router();
 const categories = require('./categories');
 const categoryWithItems = require('./categories/items');
 const auth = require('./user/auth');
-const conditions = require('./conditions')
+const conditions = require('./conditions');
 const users = require('./user/');
 const items = require('./items');
 const photo = require('./photos');
 
+console.log('index');
 router.use('/', auth);
 router.use('/user', users);
 router.use('/items', items);
