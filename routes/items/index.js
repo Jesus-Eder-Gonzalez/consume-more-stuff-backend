@@ -12,8 +12,6 @@ const IAM_USER_SECRET = process.env.IAM_USER_SECRET;
 
 let itemId = null;
 
-
-
 // ===== HELPER ===== //
 function uploadToS3(userId, file) {
   const s3bucket = new AWS.S3({
@@ -28,13 +26,12 @@ function uploadToS3(userId, file) {
       Body: file.data
     };
     s3bucket.upload(params, (err, data) => {
-
       if (err) {
         console.log(err);
-      };
+      }
     });
   });
-};
+}
 
 ////////////
 
@@ -45,20 +42,29 @@ router.get('/', (req, res) => {
       res.json(allItems);
     })
     .catch(err => {
-      console.log('error : ', err)
+      console.log('error : ', err);
+    });
+});
+
+router.put('/:id/views', (req, res) => {
+  const id = req.params.id;
+  return Item.query()
+    .where({ id })
+    .increment('views', 1)
+    .catch(err => {
+      console.log('error : ', err);
     });
 });
 
 router.get('/:id', (req, res) => {
-  const id = req.params.id
-  return Item
-    .where({ id })
+  const id = req.params.id;
+  return Item.where({ id })
     .fetchAll({ withRelated: ['condition', 'category', 'itemStatus'] })
     .then(item => {
       res.json(item);
     })
     .catch(err => {
-      console.log('error : ', err)
+      console.log('error : ', err);
     });
 });
 
@@ -92,12 +98,12 @@ router.post('/', (req, res) => {
       res.json(newItem);
     })
     .catch(err => {
-      console.log('error : ', err)
+      console.log('error : ', err);
     });
 });
 
 router.post('/photos', (req, res) => {
-  const busboy = new Busboy({ headers: req.headers })
+  const busboy = new Busboy({ headers: req.headers });
   console.log('req files', req.files);
   const file = req.files.fileUpload;
   const userId = req.user.id;
@@ -105,24 +111,21 @@ router.post('/photos', (req, res) => {
   const photoUrl = `https://${BUCKET_NAME}.s3.amazonaws.com/${userId}/${file.name}`;
 
   busboy.on('finish', () => {
-    uploadToS3(userId, file)
+    uploadToS3(userId, file);
   });
 
-  return Item
-    .where({ id: itemId })
-    .then(item => {
-      if (item) {
-        return new Photo({
-          item_id: itemId,
-          link: photoUrl
-        })
-          .then(photo => {
-            res.json(photo)
-          })
-      }
-    })
+  return Item.where({ id: itemId }).then(item => {
+    if (item) {
+      return new Photo({
+        item_id: itemId,
+        link: photoUrl
+      }).then(photo => {
+        res.json(photo);
+      });
+    }
+  });
 
-  res.send({ success: 'Uploaded' })
+  res.send({ success: 'Uploaded' });
   req.pipe(busboy);
 });
 
@@ -135,11 +138,10 @@ router.put('/:id', (req, res) => {
     notes_details,
     condition_id,
     status_id,
-    photo_id,
+    photo_id
   } = req.body;
   const id = req.params.id;
-  return Item
-    .where({ id })
+  return Item.where({ id })
     .save(
       {
         description,
@@ -149,24 +151,23 @@ router.put('/:id', (req, res) => {
         notes_details,
         condition_id,
         status_id,
-        photo_id,
+        photo_id
       },
       {
         patch: true
       }
     )
     .then(() => {
-      return Item
-        .where({ id })
+      return Item.where({ id })
         .fetchAll({ withRelated: ['condition', 'category', 'itemStatus'] })
         .then(item => {
           console.log('item', item);
           return res.json(item);
-        })
+        });
     })
     .catch(err => {
-      console.log('error : ', err)
-    })
-})
+      console.log('error : ', err);
+    });
+});
 
 module.exports = router;
