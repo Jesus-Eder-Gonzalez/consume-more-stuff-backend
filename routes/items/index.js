@@ -1,39 +1,35 @@
 const express = require('express');
 const router = express.Router();
-const AWS = require('aws-sdk');
-const Busboy = require('busboy');
 
 const Photo = require('../../db/models/Photo');
 const Item = require('../../db/models/Item');
 
-const BUCKET_NAME = 'consume-more-stuff-elite-four';
+const aws = require('aws-sdk');
+const multer = require('multer');
+const multerS3 = require('multer-s3');
+
+const BUCKET_NAME = process.env.BUCKET_NAME;
 const IAM_USER_KEY = process.env.IAM_USER_KEY;
 const IAM_USER_SECRET = process.env.IAM_USER_SECRET;
 
-let itemId = null;
+const s3 = new aws.S3({
+  accessKeyId: IAM_USER_KEY,
+  secretAccessKey: IAM_USER_SECRET
+})
 
-// ===== HELPER ===== //
-function uploadToS3(userId, file) {
-  const s3bucket = new AWS.S3({
-    Bucket: BUCKET_NAME,
-    accessKeyId: IAM_USER_KEY,
-    secretAccessKey: IAM_USER_SECRET
-  });
-  s3bucket.createBucket(() => {
-    const params = {
-      Bucket: BUCKET_NAME,
-      Key: `${userId}/${file.name}`,
-      Body: file.data
-    };
-    s3bucket.upload(params, (err, data) => {
-      if (err) {
-        console.log(err);
-      }
-    });
-  });
-}
-
-////////////
+const upload = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: BUCKET_NAME,
+    acl: 'public-read-write',
+    metadata: (req, file, cb) => {
+      cb(null, { fieldName: file.fieldname })
+    },
+    key: function (req, file, cb) {
+      cb(null, `${req.user.username}/${Date.now().toString()}-${file.originalname}`)
+    }
+  })
+})
 
 router.get('/', (req, res) => {
   return Item.query(qb => {
@@ -52,6 +48,7 @@ router.put('/:id/views', (req, res) => {
   const id = req.params.id;
   return Item.query()
     .where({ id })
+
     .increment('views', 1)
     .then(response => {
       res.json(response);
@@ -76,7 +73,10 @@ router.get('/:id', (req, res) => {
     });
 });
 
-router.post('/', (req, res) => {
+//used to link image link to item_id
+let itemId = null;
+
+router.post('/', upload.array('photo', 6), (req, res) => {
   let {
     description,
     manufacturer_make,
@@ -102,39 +102,22 @@ router.post('/', (req, res) => {
     .save()
     .then(newItem => {
       itemId = newItem.id;
-      console.log('itemId : ', itemId);
-      res.json(newItem);
+      if (req.files) {
+        return new Photo({
+          item_id: itemId,
+          link: req.files[0].location
+        })
+          .save()
+          .then(() => {
+            res.json(itemId);
+          })
+      } else {
+        return res.json(newItem);
+      }
     })
     .catch(err => {
-      console.log('error : ', err);
+      console.log('error : ', err)
     });
-});
-
-router.post('/photos', (req, res) => {
-  const busboy = new Busboy({ headers: req.headers });
-  console.log('req files', req.files);
-  const file = req.files.fileUpload;
-  const userId = req.user.id;
-  // Hard code, find out how to pluck data.location
-  const photoUrl = `https://${BUCKET_NAME}.s3.amazonaws.com/${userId}/${file.name}`;
-
-  busboy.on('finish', () => {
-    uploadToS3(userId, file);
-  });
-
-  return Item.where({ id: itemId }).then(item => {
-    if (item) {
-      return new Photo({
-        item_id: itemId,
-        link: photoUrl
-      }).then(photo => {
-        res.json(photo);
-      });
-    }
-  });
-
-  res.send({ success: 'Uploaded' });
-  req.pipe(busboy);
 });
 
 router.put('/:id', (req, res) => {
@@ -169,7 +152,6 @@ router.put('/:id', (req, res) => {
       return Item.where({ id })
         .fetchAll({ withRelated: ['condition', 'category', 'itemStatus'] })
         .then(item => {
-          console.log('item', item);
           return res.json(item);
         });
     })
