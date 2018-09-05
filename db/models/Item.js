@@ -31,7 +31,7 @@ class Item extends bookshelf.Model {
   }
 
   photos() {
-    return this.hasMany('Photo', 'id', 'photo_id');
+    return this.hasMany('Photo', 'item_id', 'id');
   }
 }
 

@@ -12,7 +12,7 @@ class Photo extends bookshelf.Model {
   }
 
   item() {
-    return this.hasOne('Photo', 'photo_id', 'id');
+    return this.hasOne('Item', 'id', 'item_id');
   }
 }
 
