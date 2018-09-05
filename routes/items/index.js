@@ -36,7 +36,9 @@ function uploadToS3(userId, file) {
 ////////////
 
 router.get('/', (req, res) => {
-  return Item.query('orderBy', 'views')
+  return Item.query(qb => {
+    qb.orderBy('views', 'DESC');
+  })
     .fetchAll()
     .then(allItems => {
       res.json(allItems);
@@ -51,6 +53,9 @@ router.put('/:id/views', (req, res) => {
   return Item.query()
     .where({ id })
     .increment('views', 1)
+    .then(response => {
+      res.json(response);
+    })
     .catch(err => {
       console.log('error : ', err);
     });
@@ -59,6 +64,9 @@ router.put('/:id/views', (req, res) => {
 router.get('/:id', (req, res) => {
   const id = req.params.id;
   return Item.where({ id })
+    .query(qb => {
+      qb.orderBy('views', 'DESC');
+    })
     .fetchAll({ withRelated: ['condition', 'category', 'itemStatus'] })
     .then(item => {
       res.json(item);
