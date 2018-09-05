@@ -9,36 +9,46 @@ const Message = require('../../db/models/Message');
 
 // ===== GET ALL OF USER'S ITEMS ===== //
 router.get('/items', (req, res) => {
-  let id = req.user.id;
-  return Item.where({ created_by: id })
-    .fetchAll({ withRelated: ['itemStatus'] })
-    .then(userItems => {
-      res.json(userItems);
-    })
-    .catch(err => {
-      console.log('error : ', err);
-    });
+  if (req.user) {
+    let id = req.user.id;
+    return Item
+      .where({ created_by: id })
+      .fetchAll({ withRelated: ['itemStatus'] })
+      .then(userItems => {
+        res.json(userItems);
+      })
+      .catch(err => {
+        console.log('error : ', err);
+      });
+  } else {
+    res.json({ message: 'Please log in to see your items!' });
+  }
 });
 
 // ===== MESSAGES ===== //
 router.get('/messages/:itemId', (req, res) => {
-  let itemId = req.params.itemId;
-  let userId = req.user.id;
-  return Message.where({
-    seller_id: userId,
-    item_id: itemId
-  })
-    .fetchAll()
-    .then(itemMessages => {
-      if (itemMessages.length < 1) {
-        res.json({ message: 'You do not have permission to view this message.' });
-      } else {
-        res.json(itemMessages);
-      }
-    })
-    .catch(err => {
-      console.log('error : ', err);
-    });
+  if (req.user) {
+    let itemId = req.params.itemId;
+    let userId = req.user.id;
+    return Message
+      .query({
+        where: { buyer_id: userId, item_id: itemId },
+        orWhere: { seller_id: userId, item_id: itemId }
+      })
+      .fetchAll()
+      .then(messages => {
+        if (messages.length < 1) {
+          res.json({ message: 'You do not have permission to view this.' });
+        } else {
+          res.json(messages)
+        }
+      })
+      .catch(err => {
+        console.log('error : ', err);
+      });
+  } else {
+    res.json({ message: 'Please log in to see your inbox!' });
+  }
 });
 
 router.post('/:buyerId/messages/:itemId', (req, res) => {
@@ -47,15 +57,17 @@ router.post('/:buyerId/messages/:itemId', (req, res) => {
   let sellerId = req.user.id;
   let { message } = req.body;
 
-  return Item.where({
-    // Checks if item belongs to seller
-    id: itemId,
-    created_by: sellerId
-  })
+  return Item
+    .where({
+      // Checks if item belongs to seller
+      id: itemId,
+      created_by: sellerId
+    })
     .fetch()
     .then(item => {
+      console.log('item', item)
       if (!item) {
-        res.json({ message: 'The item does not exist, or is not listed as yours.' });
+        res.json({ message: 'The item does not exist, or you do not have permission to view this message.' });
       } else {
         return Message.where({
           // Checks if messages exist between buyer and seller on a given item
@@ -92,7 +104,8 @@ router.post('/:buyerId/messages/:itemId', (req, res) => {
 router.put('/settings', (req, res) => {
   let username = req.user.username;
   let { oldPass, newPass } = req.body;
-  return User.where({ username })
+  return User
+    .where({ username })
     .fetchAll()
     .then(user => {
       bcrypt.compare(oldPass, user.models[0].attributes.password).then(result => {
@@ -123,7 +136,8 @@ router.get('', (req, res) => {
   let email;
   if (req.query.username) {
     username = req.query.username;
-    return User.where({ username })
+    return User
+      .where({ username })
       .fetch()
       .then(user => {
         console.log('checkusername', user);
@@ -138,7 +152,8 @@ router.get('', (req, res) => {
   }
   if (req.query.email) {
     email = req.query.email;
-    return User.where({ email })
+    return User
+      .where({ email })
       .fetch()
       .then(user => {
         console.log('checkemail', user);
