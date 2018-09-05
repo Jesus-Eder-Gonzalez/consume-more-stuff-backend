@@ -31,8 +31,6 @@ const upload = multer({
   })
 })
 
-let itemId = null;
-
 router.get('/', (req, res) => {
   return Item.query('orderBy', 'views')
     .fetchAll()
@@ -48,7 +46,7 @@ router.get('/:id', (req, res) => {
   const id = req.params.id
   return Item
     .where({ id })
-    .fetchAll({ withRelated: ['condition', 'category', 'itemStatus'] })
+    .fetchAll({ withRelated: ['condition', 'category', 'itemStatus', 'photos'] })
     .then(item => {
       res.json(item);
     })
@@ -56,6 +54,9 @@ router.get('/:id', (req, res) => {
       console.log('error : ', err)
     });
 });
+
+//used to link image link to item_id
+let itemId = null;
 
 router.post('/', upload.array('photo', 6), (req, res) => {
   let {
@@ -135,7 +136,6 @@ router.put('/:id', (req, res) => {
         .where({ id })
         .fetchAll({ withRelated: ['condition', 'category', 'itemStatus'] })
         .then(item => {
-          console.log('item', item);
           return res.json(item);
         })
     })

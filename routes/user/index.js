@@ -24,8 +24,6 @@ router.get('/items', (req, res) => {
 
 // ===== MESSAGES ===== //
 router.get('/messages/:itemId', (req, res) => {
-  console.log(req.params)
-  console.log(req.user)
   let itemId = req.params.itemId;
   let userId = req.user.id;
   return Message
