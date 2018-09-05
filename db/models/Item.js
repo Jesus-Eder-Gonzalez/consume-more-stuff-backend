@@ -18,6 +18,10 @@ class Item extends bookshelf.Model {
     return this.hasMany('Message', 'item_id', 'id');
   }
 
+  photos() {
+    return this.hasMany('Photo', 'item_id', 'id');
+  }
+
   condition() {
     return this.hasOne('Condition', 'id', 'condition_id');
   }
@@ -28,10 +32,6 @@ class Item extends bookshelf.Model {
 
   itemStatus() {
     return this.hasOne('ItemStatus', 'id', 'status_id');
-  }
-
-  photos() {
-    return this.hasMany('Photo', 'item_id', 'id');
   }
 }
 
