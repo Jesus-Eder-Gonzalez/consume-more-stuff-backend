@@ -4,7 +4,8 @@ const Category = require('../../db/models/Category');
 const Item = require('../../db/models/Item');
 
 router.get('/', (req, res) => {
-  return Category.fetchAll()
+  return Category
+    .fetchAll()
     .then(response => {
       res.json(response);
     })
@@ -17,7 +18,7 @@ router.get('/:id/items', (req, res) => {
   const category_id = req.params.id
   return Item
     .where({ category_id })
-    .fetchAll()
+    .fetchAll({ withRelated: 'photos' })
     .then(result => {
       res.json(result);
     })
