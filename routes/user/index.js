@@ -11,8 +11,7 @@ const Message = require('../../db/models/Message');
 router.get('/items', (req, res) => {
   if (req.user) {
     let id = req.user.id;
-    return Item
-      .where({ created_by: id })
+    return Item.where({ created_by: id })
       .fetchAll({ withRelated: ['itemStatus'] })
       .then(userItems => {
         res.json(userItems);
@@ -26,30 +25,49 @@ router.get('/items', (req, res) => {
 });
 
 // ===== MESSAGES ===== //
-router.get('/messages/:itemId', (req, res) => {
+
+router.get('/messages/', (req, res) => {
   if (req.user) {
-    let itemId = req.params.itemId;
-    let userId = req.user.id;
-    return Message
-      .query({
-        where: { buyer_id: userId, item_id: itemId },
-        orWhere: { seller_id: userId, item_id: itemId }
-      })
-      .fetchAll()
-      .then(messages => {
-        if (messages.length < 1) {
-          res.json({ message: 'You do not have permission to view this.' });
-        } else {
-          res.json(messages)
-        }
+    return Message.query({
+      where: { buyer_id: req.user.id },
+      orWhere: { seller_id: req.user.id }
+    })
+      .fetchAll({withRelated: ['buyer', 'seller', 'item']})
+      .then(response => {
+        res.json(response);
       })
       .catch(err => {
-        console.log('error : ', err);
+        console.log('Error: ', err);
       });
   } else {
-    res.json({ message: 'Please log in to see your inbox!' });
+    res.json({ message: 'Please log in to proceed.' });
   }
 });
+
+// router.get('/messages/:itemId', (req, res) => {
+//   if (req.user) {
+//     let itemId = req.params.itemId;
+//     let userId = req.user.id;
+//     return Message
+//       .query({
+//         where: { buyer_id: userId, item_id: itemId },
+//         orWhere: { seller_id: userId, item_id: itemId }
+//       })
+//       .fetchAll()
+//       .then(messages => {
+//         if (messages.length < 1) {
+//           res.json({ message: 'You do not have permission to view this.' });
+//         } else {
+//           res.json(messages)
+//         }
+//       })
+//       .catch(err => {
+//         console.log('error : ', err);
+//       });
+//   } else {
+//     res.json({ message: 'Please log in to see your inbox!' });
+//   }
+// });
 
 router.post('/:buyerId/messages/:itemId', (req, res) => {
   let buyerId = req.params.buyerId;
@@ -57,17 +75,19 @@ router.post('/:buyerId/messages/:itemId', (req, res) => {
   let sellerId = req.user.id;
   let { message } = req.body;
 
-  return Item
-    .where({
-      // Checks if item belongs to seller
-      id: itemId,
-      created_by: sellerId
-    })
+  return Item.where({
+    // Checks if item belongs to seller
+    id: itemId,
+    created_by: sellerId
+  })
     .fetch()
     .then(item => {
-      console.log('item', item)
+      console.log('item', item);
       if (!item) {
-        res.json({ message: 'The item does not exist, or you do not have permission to view this message.' });
+        res.json({
+          message:
+            'The item does not exist, or you do not have permission to view this message.'
+        });
       } else {
         return Message.where({
           // Checks if messages exist between buyer and seller on a given item
@@ -104,8 +124,7 @@ router.post('/:buyerId/messages/:itemId', (req, res) => {
 router.put('/settings', (req, res) => {
   let username = req.user.username;
   let { oldPass, newPass } = req.body;
-  return User
-    .where({ username })
+  return User.where({ username })
     .fetchAll()
     .then(user => {
       bcrypt.compare(oldPass, user.models[0].attributes.password).then(result => {
@@ -136,8 +155,7 @@ router.get('', (req, res) => {
   let email;
   if (req.query.username) {
     username = req.query.username;
-    return User
-      .where({ username })
+    return User.where({ username })
       .fetch()
       .then(user => {
         console.log('checkusername', user);
@@ -152,8 +170,7 @@ router.get('', (req, res) => {
   }
   if (req.query.email) {
     email = req.query.email;
-    return User
-      .where({ email })
+    return User.where({ email })
       .fetch()
       .then(user => {
         console.log('checkemail', user);
