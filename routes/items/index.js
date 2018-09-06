@@ -132,8 +132,22 @@ router.put('/:id', upload.array('photo', 6), (req, res) => {
     notes_details,
     condition_id,
     status_id,
+    // photosToDelete
   } = req.body;
   const id = req.params.id;
+  // console.log(photosToDelete);
+  // if (photosToDelete.length > 0) {
+  //   let promise = photosToDelete.map(link => {
+  //     console.log(link);
+  //     return Photo
+  //       .where({ link, item_id: id })
+  //       .destroy()
+  //   })
+  //   Promise.all(promise)
+  //     .then(() => {
+  //       return true;
+  //     })
+  // }
   return Item.where({ id })
     .save(
       {
@@ -147,9 +161,14 @@ router.put('/:id', upload.array('photo', 6), (req, res) => {
       },
       { patch: true }
     )
-    .then(editedItem => {
+    .then(() => {
       if (req.files.length === 0) {
-        return res.json(editedItem);
+        return Item
+          .where({ id })
+          .fetchAll({ withRelated: ['condition', 'category', 'itemStatus', 'photos'] })
+          .then(item => {
+            return res.json(item);
+          })
       } else {
         let promises = req.files.map(file => {
           return new Photo({
@@ -171,6 +190,6 @@ router.put('/:id', upload.array('photo', 6), (req, res) => {
     .catch(err => {
       console.log('error : ', err);
     });
-});
+})
 
 module.exports = router;
