@@ -209,3 +209,36 @@ router.get('', (req, res) => {
   }
 });
 module.exports = router;
+
+// ===== MAILGUN TESTING SITE ===== //
+const api_key = process.env.MAILGUN_API_KEY;
+const domain = 'sandboxcf90a00461df427385ed6c4be37fb47a.mailgun.org';
+const mailgun = require('mailgun-js')({ apiKey: api_key, domain: domain })
+
+
+// No need to use .env, I think. I'm just doing it for my own stuff.
+// Feel free to update the values in the "data" object.
+router.post('/sendemail', (req, res) => {
+  console.log('BODY', req.body)
+  // Should all be strings
+  const botEmail = process.env.BOT_EMAIL;
+  const receiver = req.body.receiver;
+  const subject = `You have a new notification regarding: ${req.body.item}`
+  const emailBody = req.body.text;;
+
+  const data = {
+    from: `CMS Elite 4 <${botEmail}>`,
+    to: `${receiver}`,
+    subject: `${subject}`,
+    text: `${emailBody}`
+  }
+
+  mailgun.messages().send(data, (error, body) => {
+    if (error){
+      console.log(error);
+    }
+    console.log('data', data)
+    console.log('body', body)
+    res.json({message: 'Mailgun has fired'})
+  });
+})
