@@ -178,7 +178,25 @@ router.put('/:id', upload.array('photo', 6), (req, res) => {
     .catch(err => {
       console.log('error : ', err);
     });
-})
+});
+
+router.delete('/:id', (req, res) => {
+  const id = req.params.id;
+  return Item
+    .where({ id })
+    .fetchAll()
+    .then(item => {
+      let status = item.models[0].attributes.status_id
+      status = 4;
+      return Item
+        .where({ id })
+        .save({ status_id: status }, { patch: true })
+        .then(() => {
+          res.json({ success: true })
+        })
+        .catch(err => ({ success: false }))
+    })
+});
 
 router.post('/photos', (req, res) => {
   const id = req.body.pop()
