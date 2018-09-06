@@ -12,31 +12,31 @@ exports.seed = function(knex, Promise) {
           status_id: 1
         },
         {
-          username: 'KL46',
+          username: 'kl46',
           email: 'kylelewis@yahoo.com',
           password: '$2b$12$d5agevr/C6bDRew1KH.quO88FuRrZ4OkuIr0e8WOCAqnbImx3nw92',
           status_id: 2
         },
         {
-          username: 'Jam',
+          username: 'jam',
           email: 'JayMay@gmail.com',
           password: '$2b$12$d5agevr/C6bDRew1KH.quO88FuRrZ4OkuIr0e8WOCAqnbImx3nw92',
           status_id: 2
         },
         {
-          username: 'Finster',
+          username: 'finster',
           email: 'FinRight@gmail.com',
           password: '$2b$12$d5agevr/C6bDRew1KH.quO88FuRrZ4OkuIr0e8WOCAqnbImx3nw92',
           status_id: 2
         },
         {
-          username: 'TheKing',
+          username: 'theking',
           email: 'JohnK@gmail.com',
           password: '$2b$12$d5agevr/C6bDRew1KH.quO88FuRrZ4OkuIr0e8WOCAqnbImx3nw92',
           status_id: 2
         },
         {
-          username: 'LikeG6',
+          username: 'likeg6',
           email: 'JeffGuzman@gmail.com',
           password: '$2b$12$d5agevr/C6bDRew1KH.quO88FuRrZ4OkuIr0e8WOCAqnbImx3nw92',
           status_id: 2

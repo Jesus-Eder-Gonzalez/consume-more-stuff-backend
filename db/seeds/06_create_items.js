@@ -19,12 +19,12 @@ exports.seed = function(knex, Promise) {
           status_id: 1
         },
         {
-          description: 'oven',
+          description: 'amityville toaster',
           price: 'ten chickens',
           manufacturer_make: 'manufacturer_make filler',
           model_name_number: 'model_name_number filler',
           dimensions: 'dimensions filler',
-          notes_details: 'if i set it to 2000 degrees it\'ll be done in 30 seconds ',
+          notes_details: 'do NOT put waffles in',
           views: 0,
           created_by: 2,
           condition_id: 2,
