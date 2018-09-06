@@ -23,6 +23,7 @@ const upload = multer({
     bucket: BUCKET_NAME,
     acl: 'public-read-write',
     metadata: (req, file, cb) => {
+      console.log('file', file);
       cb(null, { fieldName: file.fieldname })
     },
     key: function (req, file, cb) {
@@ -35,7 +36,7 @@ router.get('/', (req, res) => {
   return Item.query(qb => {
     qb.orderBy('views', 'DESC');
   })
-    .fetchAll()
+    .fetchAll({ withRelated: ['photos'] })
     .then(allItems => {
       res.json(allItems);
     })
@@ -64,7 +65,7 @@ router.get('/:id', (req, res) => {
     .query(qb => {
       qb.orderBy('views', 'DESC');
     })
-    .fetchAll({ withRelated: ['condition', 'category', 'itemStatus'] })
+    .fetchAll({ withRelated: ['condition', 'category', 'itemStatus', 'photos'] })
     .then(item => {
       res.json(item);
     })
@@ -102,17 +103,28 @@ router.post('/', upload.array('photo', 6), (req, res) => {
     .save()
     .then(newItem => {
       itemId = newItem.id;
-      if (req.files) {
-        return new Photo({
-          item_id: itemId,
-          link: req.files[0].location
-        })
-          .save()
-          .then(() => {
-            res.json(itemId);
-          })
-      } else {
+      if (req.files.length === 0) {
         return res.json(newItem);
+      } else {
+        let promises = req.files.map(file => {
+          return new Photo({
+            item_id: itemId,
+            link: file.location
+          })
+            .save()
+        })
+        Promise.all(promises)
+          .then(() => {
+            return res.json(newItem);
+          })
+        // return new Photo({
+        //   item_id: itemId,
+        //   link: req.files[0].location
+        // })
+        // .save()
+        // .then(() => {
+        //   return res.json(newItem);
+        // })
       }
     })
     .catch(err => {
