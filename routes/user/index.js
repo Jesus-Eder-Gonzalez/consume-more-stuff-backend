@@ -29,10 +29,9 @@ router.get('/items', (req, res) => {
 router.get('/messages/', (req, res) => {
   if (req.user) {
     return Message.query({
-      where: { buyer_id: req.user.id },
-      orWhere: { seller_id: req.user.id }
+      where: { to: req.user.id }
     })
-      .fetchAll({withRelated: ['buyer', 'seller', 'item']})
+      .fetchAll({ withRelated: ['to', 'from', 'item'] })
       .then(response => {
         res.json(response);
       })
@@ -44,132 +43,44 @@ router.get('/messages/', (req, res) => {
   }
 });
 
-// router.get('/messages/:itemId', (req, res) => {
-//   if (req.user) {
-//     let itemId = req.params.itemId;
-//     let userId = req.user.id;
-//     return Message
-//       .query({
-//         where: { buyer_id: userId, item_id: itemId },
-//         orWhere: { seller_id: userId, item_id: itemId }
-//       })
-//       .fetchAll()
-//       .then(messages => {
-//         if (messages.length < 1) {
-//           res.json({ message: 'You do not have permission to view this.' });
-//         } else {
-//           res.json(messages)
-//         }
-//       })
-//       .catch(err => {
-//         console.log('error : ', err);
-//       });
-//   } else {
-//     res.json({ message: 'Please log in to see your inbox!' });
-//   }
-// });
-
-router.post('/:buyerId/messages/:itemId', (req, res) => {
-// router.post('/:buyerId/messages/:itemId', (req, res) => {
-//   let buyerId = req.params.buyerId;
-//   let itemId = req.params.itemId;
-//   let userId = req.user.id;
-//   let { message } = req.body;
-
-//   return Item
-//     .where({
-//       // Checks if item belongs to seller
-//       id: itemId,
-//       created_by: userId
-//     })
-//     .fetch()
-//     .then(item => {
-//       console.log('item', item)
-//       if (!item) {
-//         res.json({ message: 'The item does not exist, or you do not have permission to view this message.' });
-//       } else {
-//         return Message.where({
-//           // Checks if messages exist between buyer and seller on a given item
-//           seller_id: userId,
-//           buyer_id: buyerId,
-//           item_id: itemId
-//         })
-//           .fetch()
-//           .then(oldMessage => {
-//             if (!oldMessage) {
-//               res.json({ message: 'The seller is not able to initiate conversation!' });
-//             } else {
-//               return new Message({
-//                 // Creates new message, sent by seller to buyer
-//                 buyer_id: buyerId,
-//                 seller_id: userId,
-//                 message,
-//                 item_id: itemId
-//               })
-//                 .save()
-//                 .then(newMessage => {
-//                   res.json(newMessage);
-//                 });
-//             }
-//           });
-//       }
-//     })
-//     .catch(err => {
-//       console.log('error : ', err);
-//     });
-// });
-
-router.post('/messages/:buyerId/:sellerId/:itemId', (req, res) => {
-  let buyerId = req.params.buyerId;
-  let sellerId = req.params.sellerId;
+router.post('/:toId/messages/:itemId', (req, res) => {
+  //At this point req.body should contain all the fields necessary to create a new message.
+  //The following fields are for validation checks
+  let toId = req.params.toId;
+  let fromId = req.body.from;
+  let seller_id = req.body.seller_id;
   let itemId = req.params.itemId;
   let userId = req.user.id;
-  let { message } = req.body;
 
+  //These are various checks before a message is allowed to be posted.
+  //The main ones are the item exists and that the seller isn't initiating contact.
   return Item.where({
-    // Checks if item belongs to seller
-    id: itemId,
-    created_by: sellerId
+    id: itemId
   })
     .fetch()
     .then(item => {
-      console.log('item', item);
       if (!item) {
         res.json({
           message:
-            'The item does not exist, or you do not have permission to view this message.'
+            'The item does not exist, or you do not have permission to view this item.'
         });
-  return Item
-    .where({ id })
-    .fetch()
-    .then(item => {
-      if (!item) {
-        res.json({ message: 'There was a problem processing your request. ' });
-      } else {
-        return Message
-          .where({
-            seller_id: sellerId,
-            buyer_id: buyerId,
-            itemId: itemId
-          })
+      }
+    })
+    .then(() => {
+      if (seller_id === fromId) {
+        return Message.where({ item_id: itemId, to: seller_id, from: toId })
           .fetch()
-          .then(oldMessage => {
-            if (!oldMessage && sellerId === userId) {
-              res.json({ message: 'The seller is not allowed to send the first message.' });
-            } else {
-              return new Message({
-                buyer_id: buyerId,
-                seller_id: sellerId,
-                message: message,
-                item_id: itemId
-              })
-                .save()
-                .then(newMessage => {
-                  res.json(newMessage);
-                });
-            };
+          .then(response => {
+            if (!response) {
+              return res.json({ message: 'Seller is not allowed to initiate contact' });
+            }
           });
-      };
+      }
+    })
+    .then(() => {
+      return new Message(req.body).save().then(newMessage => {
+        res.json(newMessage);
+      });
     });
 });
 
@@ -237,4 +148,5 @@ router.get('', (req, res) => {
       });
   }
 });
+
 module.exports = router;
