@@ -44,6 +44,7 @@ router.get('/messages/', (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 // router.get('/messages/:itemId', (req, res) => {
 //   if (req.user) {
 //     let itemId = req.params.itemId;
@@ -70,11 +71,65 @@ router.get('/messages/', (req, res) => {
 // });
 
 router.post('/:buyerId/messages/:itemId', (req, res) => {
+=======
+// router.post('/:buyerId/messages/:itemId', (req, res) => {
+//   let buyerId = req.params.buyerId;
+//   let itemId = req.params.itemId;
+//   let userId = req.user.id;
+//   let { message } = req.body;
+
+//   return Item
+//     .where({
+//       // Checks if item belongs to seller
+//       id: itemId,
+//       created_by: userId
+//     })
+//     .fetch()
+//     .then(item => {
+//       console.log('item', item)
+//       if (!item) {
+//         res.json({ message: 'The item does not exist, or you do not have permission to view this message.' });
+//       } else {
+//         return Message.where({
+//           // Checks if messages exist between buyer and seller on a given item
+//           seller_id: userId,
+//           buyer_id: buyerId,
+//           item_id: itemId
+//         })
+//           .fetch()
+//           .then(oldMessage => {
+//             if (!oldMessage) {
+//               res.json({ message: 'The seller is not able to initiate conversation!' });
+//             } else {
+//               return new Message({
+//                 // Creates new message, sent by seller to buyer
+//                 buyer_id: buyerId,
+//                 seller_id: userId,
+//                 message,
+//                 item_id: itemId
+//               })
+//                 .save()
+//                 .then(newMessage => {
+//                   res.json(newMessage);
+//                 });
+//             }
+//           });
+//       }
+//     })
+//     .catch(err => {
+//       console.log('error : ', err);
+//     });
+// });
+
+router.post('/messages/:buyerId/:sellerId/:itemId', (req, res) => {
+>>>>>>> develop
   let buyerId = req.params.buyerId;
+  let sellerId = req.params.sellerId;
   let itemId = req.params.itemId;
-  let sellerId = req.user.id;
+  let userId = req.user.id;
   let { message } = req.body;
 
+<<<<<<< HEAD
   return Item.where({
     // Checks if item belongs to seller
     id: itemId,
@@ -88,35 +143,39 @@ router.post('/:buyerId/messages/:itemId', (req, res) => {
           message:
             'The item does not exist, or you do not have permission to view this message.'
         });
+=======
+  return Item
+    .where({ id })
+    .fetch()
+    .then(item => {
+      if (!item) {
+        res.json({ message: 'There was a problem processing your request. ' });
+>>>>>>> develop
       } else {
-        return Message.where({
-          // Checks if messages exist between buyer and seller on a given item
-          seller_id: sellerId,
-          buyer_id: buyerId,
-          item_id: itemId
-        })
+        return Message
+          .where({
+            seller_id: sellerId,
+            buyer_id: buyerId,
+            itemId: itemId
+          })
           .fetch()
           .then(oldMessage => {
-            if (!oldMessage) {
-              res.json({ message: 'The seller is not able to initiate conversation!' });
+            if (!oldMessage && sellerId === userId) {
+              res.json({ message: 'The seller is not allowed to send the first message.' });
             } else {
               return new Message({
-                // Creates new message, sent by seller to buyer
                 buyer_id: buyerId,
                 seller_id: sellerId,
-                message,
+                message: message,
                 item_id: itemId
               })
                 .save()
                 .then(newMessage => {
                   res.json(newMessage);
                 });
-            }
+            };
           });
-      }
-    })
-    .catch(err => {
-      console.log('error : ', err);
+      };
     });
 });
 

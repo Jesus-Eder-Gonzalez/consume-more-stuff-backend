@@ -19,8 +19,12 @@ class User extends bookshelf.Model {
     return this.hasMany('Message', 'seller_id', 'id');
   }
 
-  buyerMessages() {
-    return this.hasMany('Message', 'buyer_id', 'id');
+  toMessages() {
+    return this.hasMany('Message', 'to', 'id');
+  }
+
+  fromMessages() {
+    return this.hasMany('Message', 'from', 'id')
   }
 
   itemsPosted() {

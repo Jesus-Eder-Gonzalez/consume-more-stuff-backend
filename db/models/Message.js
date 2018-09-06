@@ -11,8 +11,12 @@ class Message extends bookshelf.Model {
     return true;
   }
 
-  buyer() {
-    return this.hasOne('User', 'id', 'buyer_id');
+  to() {
+    return this.hasOne('User', 'id', 'to');
+  }
+
+  from() {
+    return this.hasOne('User', 'id', 'from')
   }
 
   seller() {
