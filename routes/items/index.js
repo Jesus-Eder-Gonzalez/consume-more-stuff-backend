@@ -23,7 +23,6 @@ const upload = multer({
     bucket: BUCKET_NAME,
     acl: 'public-read-write',
     metadata: (req, file, cb) => {
-      console.log('file', file);
       cb(null, { fieldName: file.fieldname })
     },
     key: function (req, file, cb) {
@@ -117,14 +116,6 @@ router.post('/', upload.array('photo', 6), (req, res) => {
           .then(() => {
             return res.json(newItem);
           })
-        // return new Photo({
-        //   item_id: itemId,
-        //   link: req.files[0].location
-        // })
-        // .save()
-        // .then(() => {
-        //   return res.json(newItem);
-        // })
       }
     })
     .catch(err => {
@@ -132,7 +123,7 @@ router.post('/', upload.array('photo', 6), (req, res) => {
     });
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', upload.array('photo', 6), (req, res) => {
   let {
     description,
     manufacturer_make,
@@ -141,7 +132,6 @@ router.put('/:id', (req, res) => {
     notes_details,
     condition_id,
     status_id,
-    photo_id
   } = req.body;
   const id = req.params.id;
   return Item.where({ id })
@@ -154,18 +144,29 @@ router.put('/:id', (req, res) => {
         notes_details,
         condition_id,
         status_id,
-        photo_id
       },
-      {
-        patch: true
-      }
+      { patch: true }
     )
-    .then(() => {
-      return Item.where({ id })
-        .fetchAll({ withRelated: ['condition', 'category', 'itemStatus'] })
-        .then(item => {
-          return res.json(item);
-        });
+    .then(editedItem => {
+      if (req.files.length === 0) {
+        return res.json(editedItem);
+      } else {
+        let promises = req.files.map(file => {
+          return new Photo({
+            item_id: id,
+            link: file.location
+          })
+            .save()
+        })
+        Promise.all(promises)
+          .then(() => {
+            return Item.where({ id })
+              .fetchAll({ withRelated: ['condition', 'category', 'itemStatus', 'photos'] })
+              .then(item => {
+                return res.json(item);
+              })
+          })
+      }
     })
     .catch(err => {
       console.log('error : ', err);
