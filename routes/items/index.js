@@ -132,22 +132,8 @@ router.put('/:id', upload.array('photo', 6), (req, res) => {
     notes_details,
     condition_id,
     status_id,
-    // photosToDelete
   } = req.body;
   const id = req.params.id;
-  // console.log(photosToDelete);
-  // if (photosToDelete.length > 0) {
-  //   let promise = photosToDelete.map(link => {
-  //     console.log(link);
-  //     return Photo
-  //       .where({ link, item_id: id })
-  //       .destroy()
-  //   })
-  //   Promise.all(promise)
-  //     .then(() => {
-  //       return true;
-  //     })
-  // }
   return Item.where({ id })
     .save(
       {
@@ -162,6 +148,7 @@ router.put('/:id', upload.array('photo', 6), (req, res) => {
       { patch: true }
     )
     .then(() => {
+      //if there are no files to upload, fetch the edited Item and return it
       if (req.files.length === 0) {
         return Item
           .where({ id })
@@ -170,6 +157,7 @@ router.put('/:id', upload.array('photo', 6), (req, res) => {
             return res.json(item);
           })
       } else {
+        //if there are files, then post to Photo table and then fetch Item and return it
         let promises = req.files.map(file => {
           return new Photo({
             item_id: id,
@@ -191,5 +179,21 @@ router.put('/:id', upload.array('photo', 6), (req, res) => {
       console.log('error : ', err);
     });
 })
+
+router.post('/photos', (req, res) => {
+  const id = req.body.pop()
+  let promises = req.body.map(link => {
+    return Photo
+      .where({ item_id: id, link })
+      .destroy()
+  })
+  Promise.all(promises)
+    .then(result => {
+      res.json({ deleted: true })
+    })
+    .catch(err => {
+      res.json({ deleted: false })
+    })
+});
 
 module.exports = router;
