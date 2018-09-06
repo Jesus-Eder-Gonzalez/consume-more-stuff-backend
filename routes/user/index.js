@@ -44,7 +44,6 @@ router.get('/messages/', (req, res) => {
   }
 });
 
-<<<<<<< HEAD
 // router.get('/messages/:itemId', (req, res) => {
 //   if (req.user) {
 //     let itemId = req.params.itemId;
@@ -71,7 +70,6 @@ router.get('/messages/', (req, res) => {
 // });
 
 router.post('/:buyerId/messages/:itemId', (req, res) => {
-=======
 // router.post('/:buyerId/messages/:itemId', (req, res) => {
 //   let buyerId = req.params.buyerId;
 //   let itemId = req.params.itemId;
@@ -122,14 +120,12 @@ router.post('/:buyerId/messages/:itemId', (req, res) => {
 // });
 
 router.post('/messages/:buyerId/:sellerId/:itemId', (req, res) => {
->>>>>>> develop
   let buyerId = req.params.buyerId;
   let sellerId = req.params.sellerId;
   let itemId = req.params.itemId;
   let userId = req.user.id;
   let { message } = req.body;
 
-<<<<<<< HEAD
   return Item.where({
     // Checks if item belongs to seller
     id: itemId,
@@ -143,14 +139,12 @@ router.post('/messages/:buyerId/:sellerId/:itemId', (req, res) => {
           message:
             'The item does not exist, or you do not have permission to view this message.'
         });
-=======
   return Item
     .where({ id })
     .fetch()
     .then(item => {
       if (!item) {
         res.json({ message: 'There was a problem processing your request. ' });
->>>>>>> develop
       } else {
         return Message
           .where({
