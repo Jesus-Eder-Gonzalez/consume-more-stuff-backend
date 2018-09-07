@@ -26,77 +26,62 @@ router.get('/items', (req, res) => {
 });
 
 // ===== MESSAGES ===== //
-router.get('/messages/:itemId', (req, res) => {
+
+router.get('/messages/', (req, res) => {
   if (req.user) {
-    let itemId = req.params.itemId;
-    let userId = req.user.id;
-    return Message
-      .query({
-        where: { buyer_id: userId, item_id: itemId },
-        orWhere: { seller_id: userId, item_id: itemId }
-      })
-      .fetchAll()
-      .then(messages => {
-        if (messages.length < 1) {
-          res.json({ message: 'You do not have permission to view this.' });
-        } else {
-          res.json(messages)
-        }
+    return Message.query({
+      where: { to: req.user.id }
+    })
+      .fetchAll({ withRelated: ['to', 'from', 'item'] })
+      .then(response => {
+        res.json(response);
       })
       .catch(err => {
-        console.log('error : ', err);
+        console.log('Error: ', err);
       });
   } else {
-    res.json({ message: 'Please log in to see your inbox!' });
+    res.json({ message: 'Please log in to proceed.' });
   }
 });
 
-router.post('/:buyerId/messages/:itemId', (req, res) => {
-  let buyerId = req.params.buyerId;
+router.post('/:toId/messages/:itemId', (req, res) => {
+  //At this point req.body should contain all the fields necessary to create a new message.
+  //The following fields are for validation checks
+  let toId = req.params.toId;
+  let fromId = req.body.from;
+  let seller_id = req.body.seller_id;
   let itemId = req.params.itemId;
-  let sellerId = req.user.id;
-  let { message } = req.body;
+  let userId = req.user.id;
 
-  return Item
-    .where({
-      // Checks if item belongs to seller
-      id: itemId,
-      created_by: sellerId
-    })
+  //These are various checks before a message is allowed to be posted.
+  //The main ones are the item exists and that the seller isn't initiating contact.
+  return Item.where({
+    id: itemId
+  })
     .fetch()
     .then(item => {
-      console.log('item', item)
       if (!item) {
-        res.json({ message: 'The item does not exist, or you do not have permission to view this message.' });
-      } else {
-        return Message.where({
-          // Checks if messages exist between buyer and seller on a given item
-          seller_id: sellerId,
-          buyer_id: buyerId,
-          item_id: itemId
-        })
+        res.json({
+          message:
+            'The item does not exist, or you do not have permission to view this item.'
+        });
+      }
+    })
+    .then(() => {
+      if (seller_id === fromId) {
+        return Message.where({ item_id: itemId, to: seller_id, from: toId })
           .fetch()
-          .then(oldMessage => {
-            if (!oldMessage) {
-              res.json({ message: 'The seller is not able to initiate conversation!' });
-            } else {
-              return new Message({
-                // Creates new message, sent by seller to buyer
-                buyer_id: buyerId,
-                seller_id: sellerId,
-                message,
-                item_id: itemId
-              })
-                .save()
-                .then(newMessage => {
-                  res.json(newMessage);
-                });
+          .then(response => {
+            if (!response) {
+              return res.json({ message: 'Seller is not allowed to initiate contact' });
             }
           });
       }
     })
-    .catch(err => {
-      console.log('error : ', err);
+    .then(() => {
+      return new Message(req.body).save().then(newMessage => {
+        res.json(newMessage);
+      });
     });
 });
 
@@ -104,8 +89,7 @@ router.post('/:buyerId/messages/:itemId', (req, res) => {
 router.put('/settings', (req, res) => {
   let username = req.user.username;
   let { oldPass, newPass } = req.body;
-  return User
-    .where({ username })
+  return User.where({ username })
     .fetchAll()
     .then(user => {
       bcrypt.compare(oldPass, user.models[0].attributes.password).then(result => {
@@ -136,8 +120,7 @@ router.get('', (req, res) => {
   let email;
   if (req.query.username) {
     username = req.query.username;
-    return User
-      .where({ username })
+    return User.where({ username })
       .fetch()
       .then(user => {
         console.log('checkusername', user);
@@ -152,8 +135,7 @@ router.get('', (req, res) => {
   }
   if (req.query.email) {
     email = req.query.email;
-    return User
-      .where({ email })
+    return User.where({ email })
       .fetch()
       .then(user => {
         console.log('checkemail', user);
@@ -167,4 +149,5 @@ router.get('', (req, res) => {
       });
   }
 });
+
 module.exports = router;
