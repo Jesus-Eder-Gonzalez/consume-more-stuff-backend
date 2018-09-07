@@ -11,8 +11,9 @@ const Message = require('../../db/models/Message');
 router.get('/items', (req, res) => {
   if (req.user) {
     let id = req.user.id;
-    return Item.where({ created_by: id })
-      .fetchAll({ withRelated: ['itemStatus'] })
+    return Item
+      .where({ created_by: id })
+      .fetchAll({ withRelated: ['itemStatus', 'photos'] })
       .then(userItems => {
         res.json(userItems);
       })
