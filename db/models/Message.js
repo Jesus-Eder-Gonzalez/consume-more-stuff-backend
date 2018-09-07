@@ -26,6 +26,10 @@ class Message extends bookshelf.Model {
   item() {
     return this.hasOne('Item', 'id', 'item_id');
   }
+
+  msgStatus() {
+    return this.hasOne('MessageStatus', 'id', 'msg_status')
+  }
 }
 
 module.exports = bookshelf.model('Message', Message);
