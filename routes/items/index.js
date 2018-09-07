@@ -35,7 +35,7 @@ router.get('/', (req, res) => {
   return Item.query(qb => {
     qb.orderBy('views', 'DESC');
   })
-    .fetchAll()
+    .fetchAll({ withRelated: ['photos'] })
     .then(allItems => {
       res.json(allItems);
     })
@@ -64,7 +64,7 @@ router.get('/:id', (req, res) => {
     .query(qb => {
       qb.orderBy('views', 'DESC');
     })
-    .fetchAll({ withRelated: ['condition', 'category', 'itemStatus'] })
+    .fetchAll({ withRelated: ['condition', 'category', 'itemStatus', 'photos'] })
     .then(item => {
       res.json(item);
     })
@@ -102,17 +102,20 @@ router.post('/', upload.array('photo', 6), (req, res) => {
     .save()
     .then(newItem => {
       itemId = newItem.id;
-      if (req.files) {
-        return new Photo({
-          item_id: itemId,
-          link: req.files[0].location
-        })
-          .save()
-          .then(() => {
-            res.json(itemId);
-          })
-      } else {
+      if (req.files.length === 0) {
         return res.json(newItem);
+      } else {
+        let promises = req.files.map(file => {
+          return new Photo({
+            item_id: itemId,
+            link: file.location
+          })
+            .save()
+        })
+        Promise.all(promises)
+          .then(() => {
+            return res.json(newItem);
+          })
       }
     })
     .catch(err => {
@@ -120,7 +123,7 @@ router.post('/', upload.array('photo', 6), (req, res) => {
     });
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', upload.array('photo', 6), (req, res) => {
   let {
     description,
     manufacturer_make,
@@ -129,7 +132,6 @@ router.put('/:id', (req, res) => {
     notes_details,
     condition_id,
     status_id,
-    photo_id
   } = req.body;
   const id = req.params.id;
   return Item.where({ id })
@@ -142,22 +144,74 @@ router.put('/:id', (req, res) => {
         notes_details,
         condition_id,
         status_id,
-        photo_id
       },
-      {
-        patch: true
-      }
+      { patch: true }
     )
     .then(() => {
-      return Item.where({ id })
-        .fetchAll({ withRelated: ['condition', 'category', 'itemStatus'] })
-        .then(item => {
-          return res.json(item);
-        });
+      //if there are no files to upload, fetch the edited Item and return it
+      if (req.files.length === 0) {
+        return Item
+          .where({ id })
+          .fetchAll({ withRelated: ['condition', 'category', 'itemStatus', 'photos'] })
+          .then(item => {
+            return res.json(item);
+          })
+      } else {
+        //if there are files, then post to Photo table and then fetch Item and return it
+        let promises = req.files.map(file => {
+          return new Photo({
+            item_id: id,
+            link: file.location
+          })
+            .save()
+        })
+        Promise.all(promises)
+          .then(() => {
+            return Item.where({ id })
+              .fetchAll({ withRelated: ['condition', 'category', 'itemStatus', 'photos'] })
+              .then(item => {
+                return res.json(item);
+              })
+          })
+      }
     })
     .catch(err => {
       console.log('error : ', err);
     });
+});
+
+router.delete('/:id', (req, res) => {
+  const id = req.params.id;
+  return Item
+    .where({ id })
+    .fetchAll()
+    .then(item => {
+      let status = item.models[0].attributes.status_id
+      status = 4;
+      return Item
+        .where({ id })
+        .save({ status_id: status }, { patch: true })
+        .then(() => {
+          res.json({ success: true })
+        })
+        .catch(err => ({ success: false }))
+    })
+});
+
+router.post('/photos', (req, res) => {
+  const id = req.body.pop()
+  let promises = req.body.map(link => {
+    return Photo
+      .where({ item_id: id, link })
+      .destroy()
+  })
+  Promise.all(promises)
+    .then(result => {
+      res.json({ deleted: true })
+    })
+    .catch(err => {
+      res.json({ deleted: false })
+    })
 });
 
 module.exports = router;
