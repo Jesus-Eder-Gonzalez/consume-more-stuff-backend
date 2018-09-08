@@ -5,10 +5,10 @@ exports.seed = function(knex, Promise) {
     .then(function() {
       // Inserts seed entries
       return knex('user_statuses').insert([
-        { name: 'admin', rank: 1 },
-        { name: 'active', rank: 2 },
-        { name: 'flagged', rank: 3 },
-        { name: 'inactive', rank: 4 }
+        { name: 'Admin', rank: 1 },
+        { name: 'Active', rank: 2 },
+        { name: 'Flagged', rank: 3 },
+        { name: 'Inactive', rank: 4 }
       ]);
     });
 };
