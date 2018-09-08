@@ -31,7 +31,7 @@ exports.seed = function(knex, Promise) {
         },
         {
           username: 'testuser',
-          email: 'admin@cm.s',
+          email: 'admin1@cm.s',
           password: '$2b$12$d5agevr/C6bDRew1KH.quO88FuRrZ4OkuIr0e8WOCAqnbImx3nw92',
           status_id: 2
         },
