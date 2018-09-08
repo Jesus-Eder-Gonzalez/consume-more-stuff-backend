@@ -12,13 +12,37 @@ exports.seed = function(knex, Promise) {
           status_id: 1
         },
         {
-          username: 'kl46',
+          username: 'supahkenneh',
+          email: 'supahkenneh@cm.s',
+          password: '$2b$12$d5agevr/C6bDRew1KH.quO88FuRrZ4OkuIr0e8WOCAqnbImx3nw92',
+          status_id: 1
+        },
+        {
+          username: 'hobie93',
+          email: 'hobie93@cm.s',
+          password: '$2b$12$d5agevr/C6bDRew1KH.quO88FuRrZ4OkuIr0e8WOCAqnbImx3nw92',
+          status_id: 1
+        },
+        {
+          username: 'mcpatrickarl',
+          email: 'mcpatrickarl@cm.s',
+          password: '$2b$12$d5agevr/C6bDRew1KH.quO88FuRrZ4OkuIr0e8WOCAqnbImx3nw92',
+          status_id: 1
+        },
+        {
+          username: 'testuser',
+          email: 'admin@cm.s',
+          password: '$2b$12$d5agevr/C6bDRew1KH.quO88FuRrZ4OkuIr0e8WOCAqnbImx3nw92',
+          status_id: 2
+        },
+        {
+          username: 'akl46',
           email: 'kylelewis@yahoo.com',
           password: '$2b$12$d5agevr/C6bDRew1KH.quO88FuRrZ4OkuIr0e8WOCAqnbImx3nw92',
           status_id: 2
         },
         {
-          username: 'jam',
+          username: 'jimjam',
           email: 'JayMay@gmail.com',
           password: '$2b$12$d5agevr/C6bDRew1KH.quO88FuRrZ4OkuIr0e8WOCAqnbImx3nw92',
           status_id: 2
